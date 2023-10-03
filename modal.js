@@ -250,9 +250,9 @@ function displayConfirmationMessage() {
   closeButtonContainer.classList.add("close-button-container");
 
   // Crée le bouton "Fermer" et ajouter une classe CSS
-  const closeButton = document.createElement("button");
-  closeButton.textContent = "Fermer";
-  closeButton.classList.add("modal-btn");
+  const closeButton = document.createElement("input");
+  closeButton.value = "Fermer";
+  closeButton.classList.add("button", "btn-submit");
 
   // Ajoute un gestionnaire d'événement "click" au bouton pour appeler la fonction "closeModal" lors du clic
   closeButton.addEventListener("click", closeModal);
