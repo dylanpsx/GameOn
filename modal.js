@@ -26,15 +26,28 @@ closeBtn.addEventListener("click", closeModal);
 function launchModal() {
   modalbg.classList.add("fixed-height-modal"); // Ajoutez la classe pour définir la hauteur
   modalbg.style.display = "block";
+  resetForm(); // Réinitialise le formulaire à l'ouverture de la modal
 }
 
 // Fonction pour fermer la modale : J'ai définis la propriété CSS display sur "none" ce qui cache la modale
 function closeModal() {
   modalbg.style.display = "none";
+  // Réaffiche le formulaire lorsque la modal est fermée
+  document.querySelector("form[name='reserve']").style.display = "block";
 }
 
-// Fonction de validation du formulaire : J'appel plusieurs fonctions de validation spécifiques pour chaque champ du formulaire
-// Je vérifie si toutes les fonctions de validation renvoient true, ce qui signifie que chaque champ est valide. 
+// Attache des gestionnaires d'événements "change" aux champs d'entrée
+const inputFields = document.querySelectorAll(".formData input");
+
+inputFields.forEach((input) => {
+  input.addEventListener("change", () => {
+    // Lorsqu'une modification est détectée dans un champ, appel de la validateForm() pour vérifier le formulaire en temps réel.
+    validateForm();
+  });
+});
+
+// Fonction de validation du formulaire : Elle appelle plusieurs fonctions de validation spécifiques pour chaque champ du formulaire.
+// Elle vérifie si toutes les fonctions de validation renvoient true, ce qui signifie que chaque champ est valide. 
 // Si c'est le cas, la fonction renvoie true, indiquant que le formulaire est valide.
 function validateForm() {
   const isValidFirstName = validateFirstName();
@@ -45,15 +58,9 @@ function validateForm() {
   const isValidLocation = validateLocation();
   const isValidTerms = validateTerms();
 
-  return (
-    isValidFirstName &&
-    isValidLastName &&
-    isValidEmail &&
-    isValidBirthdate &&
-    isValidQuantity &&
-    isValidLocation &&
-    isValidTerms
-  );
+  const isValid = isValidFirstName && isValidLastName && isValidEmail && isValidBirthdate && isValidQuantity && isValidLocation && isValidTerms;
+
+  return isValid;
 }
 
 // Fonction de validation du champ Date de naissance : Je commence par vérifier si le champ est vide, auquel cas elle affiche un message d'erreur 
@@ -157,10 +164,11 @@ function validateFirstName() {
   const firstNameInput = document.getElementById("first");
   const firstNameError = document.getElementById("first-error");
 
-  const namePattern = /^[A-Za-zÀ-ÖØ-öø-ÿ\s\-']+$/; // Regex pour les noms (peut inclure des espaces et des apostrophes)
+  // Regex pour exclure les espaces et nécessiter au moins deux caractères
+  const namePattern = /^[A-Za-zÀ-ÖØ-öø-ÿ\-']+$/; 
 
   if (!firstNameInput.value || firstNameInput.value.length < 2 || !namePattern.test(firstNameInput.value)) {
-    firstNameError.textContent = "Veuillez entrer un prénom valide.";
+    firstNameError.textContent = "Veuillez entrer un prénom valide (au moins deux caractères, pas d'espaces).";
     firstNameInput.parentElement.setAttribute("data-error-visible", "true");
     return false;
   } else {
@@ -170,6 +178,7 @@ function validateFirstName() {
   }
 }
 
+
 // Fonction de validation du champ Nom : J'utilise également l'expression régulière pour vérifier le format du nom 
 // Si le champ est vide et a moins de 2 caractères ou ne correspond pas au modèle de nom un message d'erreur est affiché
 // Sinon le champ est valide.
@@ -177,10 +186,11 @@ function validateLastName() {
   const lastNameInput = document.getElementById("last");
   const lastNameError = document.getElementById("last-error");
 
-  const namePattern = /^[A-Za-zÀ-ÖØ-öø-ÿ\s\-']+$/; // Regex pour les noms (peut inclure des espaces et des apostrophes)
+  // Regex pour exclure les espaces et nécessiter au moins deux caractères.
+  const namePattern = /^[A-Za-zÀ-ÖØ-öø-ÿ\-']+$/;
 
   if (!lastNameInput.value || lastNameInput.value.length < 2 || !namePattern.test(lastNameInput.value)) {
-    lastNameError.textContent = "Veuillez entrer un nom valide.";
+    lastNameError.textContent = "Veuillez entrer un nom valide (au moins deux caractères, pas d'espaces).";
     lastNameInput.parentElement.setAttribute("data-error-visible", "true");
     return false;
   } else {
@@ -189,6 +199,7 @@ function validateLastName() {
     return true;
   }
 }
+
 
 // Fonction de validation du champ E-mail : J'utilise une expression régulière pour vérifier que l'adresse e-mail à un format valide 
 // Si le champ est vide ou ne correspond pas au modèle d'adresse e-mail un message d'erreur est affiché 
@@ -260,11 +271,12 @@ function displayConfirmationMessage() {
   // Ajoute le bouton "Fermer" au conteneur du bouton
   closeButtonContainer.appendChild(closeButton);
 
-  // Ajoute le conteneur du bouton "Fermer" au message de confirmation
-  confirmationContainer.appendChild(closeButtonContainer);
-
   // Ajoute le message de confirmation (avec le bouton "Fermer") à l'élément avec l'ID "confirmation-message"
   confirmationMessage.appendChild(confirmationContainer);
+
+  // Réinitialise le formulaire après avoir affiché le message de confirmation
+  resetForm();
+
 }
 
 // Événement pour la soumission du formulaire : L'événement est attaché au formulaire avec l'attribut name égal à "reserve" 
@@ -297,12 +309,28 @@ function getSelectedLocation() {
   return null; // Retourne null si aucun bouton radio n'est sélectionné
 }
 
-// Attacher des gestionnaires d'événements "change" aux champs d'entrée
-const inputFields = document.querySelectorAll(".formData input");
+const signupBtn = document.querySelector(".btn-signup");
+const modalSignupBtn = document.querySelector(".modal-btn");
 
-inputFields.forEach((input) => {
-  input.addEventListener("change", () => {
-    // Lorsque la valeur d'un champ change, appelez validateForm() pour vérifier le formulaire en temps réel.
-    validateForm();
-  });
+signupBtn.addEventListener("click", () => {
+  modalbg.style.display = "block";
+  resetForm(); // Réinitialise le formulaire à l'ouverture de la modal à partir du bouton "S'inscrire"
 });
+
+modalSignupBtn.addEventListener("click", () => {
+  modalbg.style.display = "block";
+  resetForm(); // Réinitialise le formulaire à l'ouverture de la modal à partir du bouton "modal-btn"
+});
+
+// Fonction pour réinitialiser le formulaire
+function resetForm() {
+  const form = document.querySelector("form[name='reserve']");
+  form.reset();
+
+  // Réinitialiser les messages d'erreur et de validation
+  const errorMessages = document.querySelectorAll(".error-message");
+  errorMessages.forEach((message) => (message.textContent = ""));
+  inputFields.forEach((input) => {
+    input.parentElement.setAttribute("data-error-visible", "false");
+  });
+}
