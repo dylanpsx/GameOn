@@ -34,6 +34,7 @@ function closeModal() {
   modalbg.style.display = "none";
   // Réaffiche le formulaire lorsque la modal est fermée
   document.querySelector("form[name='reserve']").style.display = "block";
+  document.querySelector(".confirmation-message").style.display = "none";
 }
 
 // Attache des gestionnaires d'événements "change" aux champs d'entrée
