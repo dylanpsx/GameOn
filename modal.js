@@ -20,13 +20,12 @@ modalBtn.forEach((btn) => btn.addEventListener("click", launchModal));
 // Événement pour fermer la modale : J'ajoute un gestionnaire d'événement "click"
 // Lorsque le bouton est cliqué la fonction "closeModal" est appelée pour fermer la modale
 const closeBtn = document.querySelector(".close");
-closeBtn.addEventListener("click", closeModal);
+closeBtn.addEventListener("click", closeModal, resetForm);
 
 // Fonction pour ouvrir la modale : J'ai défini la propriété CSS display sur "block" ce qui rend la modale visible 
 function launchModal() {
   modalbg.classList.add("fixed-height-modal"); // Ajoutez la classe pour définir la hauteur
   modalbg.style.display = "block";
-  resetForm(); // Réinitialise le formulaire à l'ouverture de la modal
 }
 
 // Fonction pour fermer la modale : J'ai définis la propriété CSS display sur "none" ce qui cache la modale
@@ -35,6 +34,8 @@ function closeModal() {
   // Réaffiche le formulaire lorsque la modal est fermée
   document.querySelector("form[name='reserve']").style.display = "block";
   document.querySelector(".confirmation-message").style.display = "none";
+  resetForm()
+
 }
 
 // Attache des gestionnaires d'événements "change" aux champs d'entrée
@@ -250,6 +251,12 @@ function displayConfirmationMessage() {
   // Masque le formulaire en définissant sa propriété "display" sur "none"
   form.style.display = "none";
 
+   // Supprime tous les éléments avec la classe "confirmation-container"
+   const existingConfirmationContainers = document.querySelectorAll(".confirmation-container");
+   existingConfirmationContainers.forEach((container) => {
+     container.remove();
+   });
+
   // Crée un conteneur pour le message de confirmation et ajouter une classe CSS
   const confirmationContainer = document.createElement("div");
   confirmationContainer.classList.add("confirmation-container");
@@ -274,10 +281,6 @@ function displayConfirmationMessage() {
 
   // Ajoute le message de confirmation (avec le bouton "Fermer") à l'élément avec l'ID "confirmation-message"
   confirmationMessage.appendChild(confirmationContainer);
-
-  // Réinitialise le formulaire après avoir affiché le message de confirmation
-  resetForm();
-
 }
 
 // Événement pour la soumission du formulaire : L'événement est attaché au formulaire avec l'attribut name égal à "reserve" 
@@ -315,23 +318,36 @@ const modalSignupBtn = document.querySelector(".modal-btn");
 
 signupBtn.addEventListener("click", () => {
   modalbg.style.display = "block";
-  resetForm(); // Réinitialise le formulaire à l'ouverture de la modal à partir du bouton "S'inscrire"
 });
 
 modalSignupBtn.addEventListener("click", () => {
   modalbg.style.display = "block";
-  resetForm(); // Réinitialise le formulaire à l'ouverture de la modal à partir du bouton "modal-btn"
+
 });
 
 // Fonction pour réinitialiser le formulaire
 function resetForm() {
   const form = document.querySelector("form[name='reserve']");
-  form.reset();
 
-  // Réinitialiser les messages d'erreur et de validation
+  // Supprime la saisie préremplie en attribuant une valeur vide aux champs de type texte, date, number, et radio
+  form.querySelectorAll("input[type='text'], input[type='date'], input[type='number']").forEach((input) => {
+    input.value = "";
+  });
+  
+  // Supprime la sélection des boutons radio
+  form.querySelectorAll("input[type='radio']").forEach((radio) => {
+    radio.checked = false;
+  });
+
+  // Réinitialise les messages d'erreur et de validation
   const errorMessages = document.querySelectorAll(".error-message");
   errorMessages.forEach((message) => (message.textContent = ""));
   inputFields.forEach((input) => {
     input.parentElement.setAttribute("data-error-visible", "false");
   });
+
+  // Rechargez la page actuelle
+  window.location.reload();
 }
+
+
